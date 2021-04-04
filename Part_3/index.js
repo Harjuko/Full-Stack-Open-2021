@@ -55,10 +55,25 @@ app.delete('/api/persons/:id', (req, res) => {
 
 app.post('/api/persons', (req, res) => {
   const body = req.body
-
-  if (!body.name) {
+  const duplicateName = (personName) => {
+    return !!persons.find(person => person.name === personName)
+  }
+  
+  if (!body.name && !body.number) {
     return res.status(400).json({ 
-      error: 'content missing' 
+      error: 'no payload' 
+    })
+  } else if (!body.name) {
+    return res.status(400).json({ 
+      error: 'name missing' 
+    })
+  } else if (!body.number) {
+    return res.status(400).json({ 
+      error: 'number missing' 
+    })
+  } else if (duplicateName(body.name)) {
+    return res.status(400).json({ 
+      error: 'name must be unique' 
     })
   }
 
@@ -81,5 +96,5 @@ app.get('/info', (req, res) => {
 
 const PORT = 3001
 app.listen(PORT, () => {
-  console.log('Server running on port ${PORT}')
+  console.log(`Server running on port ${PORT}`)
 })
